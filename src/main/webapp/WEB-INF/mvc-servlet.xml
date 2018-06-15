@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        ">
+    <!-- 包扫描 -->
+    <context:component-scan base-package="com.zhao.web.controller"/>
+    <!-- Spring MVC为@Controller分发请求所必需的 -->
+    <mvc:annotation-driven/>
+
+    <!-- 静态资源映射,交给web容器默认的servlet处理 -->
+    <mvc:default-servlet-handler/>
+
+
+    <!-- 根据视图名，查找spring容器中对应的视图对象 来解析 -->
+    <bean class="org.springframework.web.servlet.view.BeanNameViewResolver" />
+    <!-- internalResourceViewResolver视图解析器   默认的order属性值是:Integer.MAX_VALUE,所以最后才会轮到它来解析 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="suffix" value=".jsp"></property>
+        <property name="prefix" value="/WEB-INF/jsp/"></property>
+    </bean>
+
+
+    <!-- json视图对象 -->
+    <bean id="jsonView" class="org.springframework.web.servlet.view.json.MappingJackson2JsonView"/>
+
+
+    <!-- 异常处理器 -->
+    <bean class="com.zhao.web.exception.SpringExceptionResolver"/>
+
+    <mvc:interceptors>
+        <!-- 登录校验拦截器 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**" />
+            <mvc:exclude-mapping path="/assets/**" />
+            <mvc:exclude-mapping path="/bootstrap3.3.5/**"/>
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/ztree/**"/>
+            <mvc:exclude-mapping path="/signin.jsp"/>
+            <mvc:exclude-mapping path="/login.page"/>
+            <mvc:exclude-mapping path="/user/noAuth.page"/>
+            <bean class="com.zhao.web.interceptor.LoginInterceptor" />
+        </mvc:interceptor>
+        <!-- 权限拦截器 -->
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <mvc:exclude-mapping path="/assets/**" />
+            <mvc:exclude-mapping path="/bootstrap3.3.5/**"/>
+            <mvc:exclude-mapping path="/css/**"/>
+            <mvc:exclude-mapping path="/js/**"/>
+            <mvc:exclude-mapping path="/ztree/**"/>
+            <mvc:exclude-mapping path="/signin.jsp"/>
+            <mvc:exclude-mapping path="/login.page"/>
+            <mvc:exclude-mapping path="/user/noAuth.page"/>
+            <bean class="com.zhao.web.interceptor.ResourcePermInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+</beans>
