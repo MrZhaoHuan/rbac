@@ -144,11 +144,23 @@
     <if test="afterSeg!=null">
       and newValue like #{afterSeg}
     </if>
-    <if test="fromTime!=null">
+    <if test="fromTime!=null and fromTime!='' ">
       and operate_time &gt;= #{fromTime}
     </if>
-    <if test="toTime!=null">
+    <if test="toTime!=null and toTime!=''">
       and operate_time &lt;= #{toTime}
     </if>
+    order by operate_time desc
   </select>
+  <insert id="insertBatchSelective" parameterType="map">
+    insert into sys_log (type, targetId,
+    oldValue, newValue, operator,
+    operate_time, operate_ip)
+    values
+    <foreach collection="rbacLogs" item="rbacLog" separator=",">
+      ( #{rbacLog.type}, #{rbacLog.targetid},
+      #{rbacLog.oldvalue}, #{rbacLog.newvalue}, #{rbacLog.operator},
+      #{rbacLog.operateTime}, #{rbacLog.operateIp})
+    </foreach>
+  </insert>
 </mapper>
