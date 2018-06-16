@@ -20,7 +20,6 @@ public class SpringExceptionResolver implements HandlerExceptionResolver {
         String defaultErro = "system error";
         boolean isJsonReq = request.getRequestURI().endsWith(".json");
         boolean isPageReq = request.getRequestURI().endsWith(".page");
-
         if (isJsonReq) {
             if (ex instanceof PermException || ex instanceof ParamException) {
                 mv = new ModelAndView("jsonView", JsonObj.error(ex.getMessage()).toMap());

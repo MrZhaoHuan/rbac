@@ -27,7 +27,7 @@ public interface DeptMapper {
 
     List<Dept> selectAllChildDept(String level);
 
-    void batchUpdate(List<Dept> depts);
+    void batchUpdate(@Param("depts")List<Dept> depts);
 
     int selectUserCountByDept(Integer deptId);
 

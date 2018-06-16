@@ -20,4 +20,9 @@ public class ApplicationContextUtil implements ApplicationContextAware{
     public static ApplicationContext getAppContext(){
          return  appContext;
     }
+
+    //获取spring容器中的某个bean
+    public static <T> T getBean(Class<T> clz){
+        return  appContext.getBean(clz);
+    }
 }
