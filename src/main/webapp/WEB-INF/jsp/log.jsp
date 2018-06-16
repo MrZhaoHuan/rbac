@@ -1,4 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@page isELIgnored="false" %>
 <html>
 <head>
     <jsp:include page="/common/backend_common.jsp"/>
@@ -124,7 +125,7 @@
             function loadLogList() {
                 var pageSize = $("#pageSize").val();
                 var pageNo = $("#logPage .pageNo").val() || 1;
-                var url = "/sys/log/page.json";
+                var url = "${pageContext.request.contextPath}/log/page.json";
                 var beforeSeg = $("#search-before").val();
                 var afterSeg = $("#search-after").val();
                 var operator = $("#search-operator").val();
@@ -151,7 +152,7 @@
             }
 
             function renderLogListAndPage(result, url) {
-                if (result.ret) {
+                if (result.code==="0") {
                     if (result.data.total > 0) {
                         var rendered = Mustache.render(logListTemplate, {
                             "logList": result.data.data,
@@ -159,13 +160,13 @@
                                 return function (text, render) {
                                     var typeStr = "";
                                     switch (this.type) {
-                                        case 1: typeStr = "部门";break;
-                                        case 2: typeStr = "用户";break;
-                                        case 3: typeStr = "权限模块";break;
-                                        case 4: typeStr = "权限点";break;
-                                        case 5: typeStr = "角色";break;
-                                        case 6: typeStr = "角色权限关系";break;
-                                        case 7: typeStr = "角色用户关系";break;
+                                        case "1": typeStr = "部门";break;
+                                        case "2": typeStr = "用户";break;
+                                        case "3": typeStr = "权限模块";break;
+                                        case "4": typeStr = "权限点";break;
+                                        case "5": typeStr = "角色";break;
+                                        case "6": typeStr = "角色权限关系";break;
+                                        case "7": typeStr = "角色用户关系";break;
                                         default: typeStr = "未知";
                                     }
                                     return typeStr;
@@ -178,12 +179,12 @@
                             },
                             "showOldValue": function () {
                                 return function (text, render) {
-                                    return this.oldValue ? ((this.type == 6 || this.type == 7) ? this.oldValue : formatJson(this.oldValue)) : '无';
+                                    return this.oldvalue ? ((this.type == "6" || this.type == "7") ? this.oldvalue : formatJson(this.oldvalue)) : '无';
                                 }
                             },
                             "showNewValue": function () {
                                 return function (text, render) {
-                                    return this.newValue ? ((this.type == 6 || this.type == 7) ? this.newValue : formatJson(this.newValue)) : '无';
+                                    return this.newvalue ? ((this.type == "6" || this.type == "7") ? this.newvalue : formatJson(this.newvalue)) : '无';
                                 }
                             }
                         });
@@ -199,7 +200,7 @@
                     var pageNo = $("#logPage .pageNo").val() || 1;
                     renderPage(url, result.data.total, pageNo, pageSize, result.data.total > 0 ? result.data.data.length : 0, "logPage", renderLogListAndPage);
                 } else {
-                    showMessage("获取权限操作历史列表", result.msg, false);
+                    showMessage("获取权限操作历史列表", result.message, false);
                 }
             }
 
@@ -210,16 +211,16 @@
                     console.log(logId);
                     if (confirm("确定要还原这个操作吗?")) {
                         $.ajax({
-                            url: "/sys/log/recover.json",
+                            url: "${pageContext.request.contextPath}/log/recover.json",
                             data: {
                                 id: logId
                             },
                             success: function (result) {
-                                if (result.ret) {
+                                if (result.code==="0") {
                                     showMessage("还原历史记录", "操作成功", true);
                                     loadLogList();
                                 } else {
-                                    showMessage("还原历史记录", result.msg, false);
+                                    showMessage("还原历史记录", result.message, false);
                                 }
                             }
                         });
