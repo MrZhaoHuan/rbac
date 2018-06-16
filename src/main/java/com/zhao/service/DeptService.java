@@ -4,13 +4,11 @@ import com.zhao.dao.DeptMapper;
 import com.zhao.pojo.Dept;
 import com.zhao.vo.DeptVo;
 import com.zhao.web.exception.ParamException;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * @创建人 zhaohuan
@@ -21,7 +19,13 @@ import java.util.List;
 @Service
 public class DeptService {
     private DeptMapper mapper;
+    private LogService logService;
     private Integer ROOT= 0;
+
+    @Autowired
+    public void setLogService(LogService logService) {
+        this.logService = logService;
+    }
 
     @Autowired
     public void setMapper(DeptMapper mapper) {
@@ -40,6 +44,7 @@ public class DeptService {
             throw new ParamException("同一个父级部门下，名称不能重复");
         }
         mapper.insertSelective(dept);
+        logService.saveDeptLog(null, Arrays.asList(dept));
     }
 
 
@@ -106,8 +111,10 @@ public class DeptService {
 
             Dept dbDept = mapper.selectByPrimaryKey(dept.getId());
             Dept parentDept = new Dept();
+             boolean isRoot = false;
             if(dept.getParentId().equals(0)){
                 //如果是最顶层
+                isRoot = true;
                 parentDept.setLevel("0");
                 parentDept.setParentId(0);
             }else{
@@ -116,20 +123,31 @@ public class DeptService {
 
             if(!dbDept.getParentId().equals(dept.getParentId())){
                 //查询所有下级部门信息
-                List<Dept> childDepts = mapper.selectAllChildDept(dbDept.getLevel()+"."+dbDept.getId());
-                for(Dept child:childDepts){
-                    //修改level属性
-                    child.setLevel(child.getLevel().replace(dbDept.getLevel()+"."+dbDept.getId(),parentDept.getLevel()+"."+parentDept.getId()));
-                }
+                List<Dept> afterChildDepts = mapper.selectAllChildDept(dbDept.getLevel()+"."+dbDept.getId());
                 //更新所有下级部门信息
-                if(childDepts.size()>0){
-                    mapper.batchUpdate(childDepts);
+                if(afterChildDepts.size()>0){
+                    List<Dept> beforeChildDepts = new ArrayList<>();
+                    for(Dept child:afterChildDepts){
+                        Dept before = new Dept();
+                        BeanUtils.copyProperties(child,before);
+                        beforeChildDepts.add(before);
+                        //修改level属性
+                        child.setLevel(child.getLevel().replace(dbDept.getLevel(),isRoot?"0":(parentDept.getLevel() + "." + parentDept.getId())));
+                    }
+                    mapper.batchUpdate(afterChildDepts);
+                    //记录日志
+                    //logService.saveDeptLog(beforeChildDepts,afterChildDepts);
                 }
             }
             //更新当前部门信息
-            dept.setLevel(parentDept.getLevel()+"."+parentDept.getId());
-            mapper.updateByPrimaryKeySelective(dept);
-
+            //之前
+            Dept beforeDept = dbDept;
+            //之后
+            Dept afterDept = dept;
+            afterDept.setLevel(isRoot?"0":(parentDept.getLevel() + "." + parentDept.getId()));
+            mapper.updateByPrimaryKeySelective(afterDept);
+            //记录当前部门日志
+            logService.saveDeptLog(Arrays.asList(beforeDept),Arrays.asList(afterDept));
     }
 
 
