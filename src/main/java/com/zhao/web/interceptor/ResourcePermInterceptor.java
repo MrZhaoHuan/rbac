@@ -4,6 +4,7 @@ import com.zhao.pojo.Permission;
 import com.zhao.service.PermService;
 import com.zhao.util.JsonObj;
 import com.zhao.util.RequestHolder;
+import com.zhao.util.SuperAdminUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -30,8 +31,14 @@ public class ResourcePermInterceptor implements HandlerInterceptor{
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception{
-        String url = request.getServletPath();
+        String url = request.getRequestURI();
         boolean isJsonReq = url.endsWith(".json");
+
+        if(SuperAdminUtil.isSuperAdmin()){
+            //超级管理员，直接放行
+            return true;
+        }
+
         //权限点sys_perm表中找不到请求url，说明不对此url拦截，放行
         //todo: 权限表中权限根据需求可能会配置成正则表达式，这里先直接全路径匹配
         List<Permission> permVos =  permService.getByUrl(url);
