@@ -158,13 +158,15 @@
         SELECT CONCAT(level,'.',id) as dept_level from sys_dept  where id = #{id};
     </select>
 
-    <select id="selectAllChildDept" resultType="Dept">
+    <select id="selectAllChildDept" resultMap="BaseResultMap">
         select * from sys_dept where level LIKE CONCAT(#{level},'%')
     </select>
 
-    <update id="batchUpdate">
-        <foreach collection="list" item="dept" separator=";">
-            update sys_dept set level = #{dept.level} where id = #{dept.id}
+    <update id="batchUpdate" parameterType="map">
+        <foreach collection="depts" item="dept" separator=";">
+            update sys_dept
+            set level = #{dept.level}
+            where id = #{dept.id}
         </foreach>
     </update>
 
