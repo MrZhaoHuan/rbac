@@ -32,7 +32,7 @@
       #{remark,jdbcType=VARCHAR}, #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, 
       #{operateIp,jdbcType=VARCHAR}, #{type,jdbcType=CHAR})
   </insert>
-  <insert id="insertSelective" parameterType="com.zhao.pojo.Role">
+  <insert id="insertSelective" parameterType="com.zhao.pojo.Role" useGeneratedKeys="true" keyProperty="id">
     insert into sys_role
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="id != null">

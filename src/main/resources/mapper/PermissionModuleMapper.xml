@@ -44,7 +44,7 @@
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR}
       )
   </insert>
-    <insert id="insertSelective" parameterType="com.zhao.pojo.PermissionModule">
+    <insert id="insertSelective" parameterType="com.zhao.pojo.PermissionModule" useGeneratedKeys="true" keyProperty="id">
         insert into sys_perm_module
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

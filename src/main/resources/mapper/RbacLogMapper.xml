@@ -11,6 +11,10 @@
     <result column="operate_time" jdbcType="TIMESTAMP" property="operateTime" />
     <result column="operate_ip" jdbcType="VARCHAR" property="operateIp" />
   </resultMap>
+
+  <resultMap id="pageListMap" type="com.zhao.vo.LogVo" extends="BaseResultMap">
+    <result column="total" property="total"></result>
+  </resultMap>
   <sql id="Base_Column_List">
     id, type, targetId, oldValue, newValue, operator, operate_time, operate_ip
   </sql>
@@ -125,4 +129,26 @@
       operate_ip = #{operateIp,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  <select id="selectPageList" parameterType="com.zhao.param.LogParam" resultMap="pageListMap">
+        select*from sys_log	log join (select count(*) as total from sys_log) logCount
+       where 1=1
+       <if test="operator!=null">
+      and operator like #{operator}
+       </if>
+    <if test="type!=null">
+      and type=#{type}
+    </if>
+    <if test="beforeSeg!=null">
+    and oldValue like #{beforeSeg}
+    </if>
+    <if test="afterSeg!=null">
+      and newValue like #{afterSeg}
+    </if>
+    <if test="fromTime!=null">
+      and operate_time &gt;= #{fromTime}
+    </if>
+    <if test="toTime!=null">
+      and operate_time &lt;= #{toTime}
+    </if>
+  </select>
 </mapper>

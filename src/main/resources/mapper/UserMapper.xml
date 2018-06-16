@@ -38,7 +38,7 @@
       #{deptId,jdbcType=INTEGER}, #{status,jdbcType=CHAR}, #{operator,jdbcType=VARCHAR},
       #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR})
   </insert>
-    <insert id="insertSelective" parameterType="com.zhao.pojo.User">
+    <insert id="insertSelective" parameterType="com.zhao.pojo.User" useGeneratedKeys="true" keyProperty="id">
         insert into sys_user
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="id != null">

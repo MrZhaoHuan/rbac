@@ -42,7 +42,7 @@
       #{operator,jdbcType=VARCHAR}, #{operateTime,jdbcType=TIMESTAMP}, #{operateIp,jdbcType=VARCHAR}
       )
   </insert>
-    <insert id="insertSelective" parameterType="com.zhao.pojo.Dept">
+    <insert id="insertSelective" parameterType="com.zhao.pojo.Dept" useGeneratedKeys="true" keyProperty="id">
         insert into sys_dept
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="name != null">
