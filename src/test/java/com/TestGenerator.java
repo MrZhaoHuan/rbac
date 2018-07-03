@@ -19,5 +19,9 @@ public class TestGenerator {
         //DefaultShellCallback callback = new DefaultShellCallback(overwrite);
         //MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
         //myBatisGenerator.generate(null);
+
+        new U1();
     }
+
+
 }

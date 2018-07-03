@@ -200,7 +200,7 @@
             <version>3.5</version>
         </dependency>
 
-        <!-- 用下那个ArrayListMultimap，嘿嘿 -->
+        <!-- 用下那个ArrayListMultimap -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-guava</artifactId>
